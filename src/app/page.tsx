@@ -12,23 +12,35 @@ export default function Component() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
+  const [employeeCode, setEmployeeCode] = useState("");
+  const [referralCode, setReferralCode] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const apiUrl = "https://aspbackend.tomocacloud.com/api/User"; 
+    // const apiUrl = "https://aspbackend.tomocacloud.com/api";
+    const apiUrl = "https://localhost:7017/api";
 
     try {
       if (isLogin) {
-        const response = await axios.post(`${apiUrl}/login`, {
-          email,
+        const response = await axios.post(`${apiUrl}/Employee/login`, {
+          username: email,
           password,
         });
         console.log("Login successful", response.data);
       } else {
-        const response = await axios.post(`${apiUrl}/signup`, {
+        const response = await axios.post(`${apiUrl}/Employee/signup`, {
+          id: 0,
           name,
-          email,
+          employeeId,
+          employeCode: employeeCode,
+          username: email,
           password,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          referralCode,
+          referralCount: 0,
+          totalRevenue: 0,
         });
         console.log("Signup successful", response.data);
       }
@@ -49,22 +61,71 @@ export default function Component() {
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
-              <div className="space-y-2">
-                <Label
-                  htmlFor="name"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="employeeId"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Employee ID
+                  </Label>
+                  <Input
+                    id="employeeId"
+                    placeholder="EMP12345"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="employeeCode"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Employee Code
+                  </Label>
+                  <Input
+                    id="employeeCode"
+                    placeholder="CODE123"
+                    value={employeeCode}
+                    onChange={(e) => setEmployeeCode(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="referralCode"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Referral Code (Optional)
+                  </Label>
+                  <Input
+                    id="referralCode"
+                    placeholder="REF123"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label
