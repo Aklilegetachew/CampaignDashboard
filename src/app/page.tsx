@@ -6,51 +6,83 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Coffee } from "lucide-react";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Component() {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [employeeId, setEmployeeId] = useState("");
-  const [employeeCode, setEmployeeCode] = useState("");
-  const [referralCode, setReferralCode] = useState("");
+  const [employeeCode, setEmployeeCode] = useState("Defualt");
+  const [referralCode, setReferralCode] = useState("Defualt");
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const apiUrl = "https://aspbackend.tomocacloud.com/api";
     const apiUrl = "https://localhost:7017/api";
 
     try {
       if (isLogin) {
         const response = await axios.post(`${apiUrl}/Employee/login`, {
-          username: email,
+          username,
           password,
         });
-        console.log("Login successful", response.data);
+        const { token, message } = response.data;
+
+        // Decode JWT to extract user information
+        const decodedToken = jwtDecode(token);
+
+        // Save token securely in cookies
+        Cookies.set("token", token, { secure: true, sameSite: "strict" });
+
+        toast.success(message, { autoClose: 2000 });
+
+        // Navigate to the dashboard or another page
+        setTimeout(() => {
+          router.push("/Dashbored");
+        }, 2000);
       } else {
         const response = await axios.post(`${apiUrl}/Employee/signup`, {
           id: 0,
           name,
           employeeId,
           employeCode: employeeCode,
-          username: email,
+          username,
           password,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           referralCode,
           referralCount: 0,
           totalRevenue: 0,
+          RoleType: "employee",
         });
-        console.log("Signup successful", response.data);
+
+        const { message } = response.data;
+
+        toast.success(message, { autoClose: 2000 });
+
+        // Navigate to login page after signup
+        setTimeout(() => {
+          setIsLogin(true);
+        }, 2000);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: any) {
+      const errorMsg =
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      toast.error(errorMsg, { autoClose: 3000 });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 p-4">
+      <ToastContainer />
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden">
         <div className="p-8">
           <div className="flex justify-center mb-6">
@@ -75,7 +107,6 @@ export default function Component() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
                 <div className="space-y-2">
@@ -91,57 +122,24 @@ export default function Component() {
                     value={employeeId}
                     onChange={(e) => setEmployeeId(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="employeeCode"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Employee Code
-                  </Label>
-                  <Input
-                    id="employeeCode"
-                    placeholder="CODE123"
-                    value={employeeCode}
-                    onChange={(e) => setEmployeeCode(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="referralCode"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Referral Code (Optional)
-                  </Label>
-                  <Input
-                    id="referralCode"
-                    placeholder="REF123"
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
               </>
             )}
             <div className="space-y-2">
               <Label
-                htmlFor="email"
+                htmlFor="username"
                 className="text-sm font-medium text-gray-700"
               >
-                Email
+                Username
               </Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
             <div className="space-y-2">
@@ -158,7 +156,6 @@ export default function Component() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
             <Button
