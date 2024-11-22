@@ -1,8 +1,6 @@
-"use client";
 
-import React, {useState} from "react";
 
-const Header: React.FC = () => {
+const Header: React.FC<any> = ({ user }) => {
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-gray-800 text-white">
       <div className="text-lg font-bold">Dashboard</div>
@@ -13,9 +11,11 @@ const Header: React.FC = () => {
           className="px-3 py-2 rounded-md bg-gray-700 text-white border border-gray-600"
         />
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline">User</span>
+          <span className="hidden sm:inline">{user.Name}</span>
           <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-            <span className="text-sm font-semibold">U</span>
+            <span className="text-sm font-semibold">
+              {user.Name.charAt(0)}
+            </span>
           </div>
         </div>
       </div>

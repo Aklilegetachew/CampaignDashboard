@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "@/axios/axiosInstance";
 
 export default function Component() {
   const [isLogin, setIsLogin] = useState(true);
@@ -25,11 +26,11 @@ export default function Component() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const apiUrl = "https://localhost:7017/api";
+  
 
     try {
       if (isLogin) {
-        const response = await axios.post(`${apiUrl}/Employee/login`, {
+        const response = await axiosInstance.post(`/Employee/login`, {
           username,
           password,
         });
@@ -48,7 +49,7 @@ export default function Component() {
           router.push("/Dashbored");
         }, 2000);
       } else {
-        const response = await axios.post(`${apiUrl}/Employee/signup`, {
+        const response = await axiosInstance.post(`/Employee/signup`, {
           id: 0,
           name,
           employeeId,

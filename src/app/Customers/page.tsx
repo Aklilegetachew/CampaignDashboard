@@ -1,63 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import LeaderboardTable from "../Component/LeadTable";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/axios/axiosInstance";
 import DashboardLayout from "../Component/DashboardLayout";
+import NewLeaderboardTable from "../Component/LeadTableCustomer";
 
-const initialParticipants = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    score: 9800,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    score: 9600,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    score: 9400,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 4,
-    name: "David Lee",
-    score: 9200,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 5,
-    name: "Eva Martinez",
-    score: 9000,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-];
+export default function NewLeaderboardPage() {
+  const [participants, setParticipants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-export default function LeaderboardPage() {
-  const [participants, setParticipants] = useState(initialParticipants);
-
-  const handleEdit = (id: number) => {
-    // Implement edit functionality
-    console.log(`Editing participant with id: ${id}`);
+  const fetchParticipants = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/User/order-by-money-spent"); // Replace with your actual API endpoint
+      setParticipants(response.data);
+    } catch (err) {
+      setError("Failed to fetch participants. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setParticipants(participants.filter((p) => p.id !== id));
-  };
+  useEffect(() => {
+    fetchParticipants();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto py-10">
+          <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
+          <p>Loading participants...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto py-10">
+          <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
-        <LeaderboardTable
-          participants={participants}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <h1 className="text-3xl font-bold mb-6">New Leaderboard</h1>
+        <NewLeaderboardTable participants={participants} />
       </div>
     </DashboardLayout>
   );

@@ -2,7 +2,24 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-const Sidebar: React.FC = () => {
+interface User {
+  EmployeeId: string;
+  Name: string;
+  ReferenceCode: string;
+  ReferenceCount: string;
+  Revenue: string;
+  Role: "admin" | "employee";
+  aud: string;
+  exp: number;
+  iss: string;
+  sub: string;
+}
+
+interface SidebarProps {
+  user: User;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -26,21 +43,35 @@ const Sidebar: React.FC = () => {
         </button>
       </div>
       <nav className="flex flex-col mt-4">
-        <Link href="/Dashbored">
-          <div className="px-4 py-2 hover:bg-gray-700">
-            {isOpen ? "Dashboard" : "→"}
+        {user.Role === "admin" ? (
+          <>
+            <Link href="/Dashbored">
+              <div className="px-4 py-2 hover:bg-gray-700">
+                {isOpen ? "Dashboard" : "→"}
+              </div>
+            </Link>
+            <Link href="/Employees">
+              <div className="px-4 py-2 hover:bg-gray-700">
+                {isOpen ? "Employee Statistics" : "→"}
+              </div>
+            </Link>
+            <Link href="/Customers">
+              <div className="px-4 py-2 hover:bg-gray-700">
+                {isOpen ? "User Activity" : "→"}
+              </div>
+            </Link>
+          </>
+        ) : user.Role === "employee" ? (
+          <Link href="/MyState">
+            <div className="px-4 py-2 hover:bg-gray-700">
+              {isOpen ? "My State" : "→"}
+            </div>
+          </Link>
+        ) : (
+          <div className="px-4 py-2 text-gray-500">
+            {isOpen ? "No Access" : "→"}
           </div>
-        </Link>
-        <Link href="/Employees">
-          <div className="px-4 py-2 hover:bg-gray-700">
-            {isOpen ? "Employee Statistics" : "→"}
-          </div>
-        </Link>
-        <Link href="/Customers">
-          <div className="px-4 py-2 hover:bg-gray-700">
-            {isOpen ? "User Activity" : "→"}
-          </div>
-        </Link>
+        )}
       </nav>
     </aside>
   );

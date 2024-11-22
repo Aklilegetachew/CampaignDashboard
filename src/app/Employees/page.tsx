@@ -1,44 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axiosInstance from "@/axios/axiosInstance";
 import LeaderboardTable from "../Component/LeadTable";
 import DashboardLayout from "../Component/DashboardLayout";
 
-const initialParticipants = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    score: 9800,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    score: 9600,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    score: 9400,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 4,
-    name: "David Lee",
-    score: 9200,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 5,
-    name: "Eva Martinez",
-    score: 9000,
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-];
-
 export default function LeaderboardPage() {
-  const [participants, setParticipants] = useState(initialParticipants);
+  const [participants, setParticipants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fetchParticipants = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/Employee/order-by-revenue"); // Replace with your actual API endpoint
+      const data = response.data.map((participant: any) => ({
+        id: participant.id,
+        name: participant.name,
+        employeeId: participant.employeeId,
+        referralCode: participant.referralCode,
+        referralCount: participant.referralCount,
+        totalRevenue: participant.totalRevenue,
+        createdAt: participant.createdAt,
+      }));
+      setParticipants(data);
+    } catch (err) {
+      setError("Failed to fetch participants. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchParticipants();
+  }, []);
 
   const handleEdit = (id: number) => {
     // Implement edit functionality
@@ -46,8 +41,30 @@ export default function LeaderboardPage() {
   };
 
   const handleDelete = (id: number) => {
-    setParticipants(participants.filter((p) => p.id !== id));
+    setParticipants(participants.filter((p: any) => p.id !== id));
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto py-10">
+          <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
+          <p>Loading participants...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto py-10">
+          <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

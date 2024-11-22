@@ -40,7 +40,7 @@ export default function Dashboard() {
         </Card>
 
         <div className="grid gap-8 md:grid-cols-2">
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Daily Trends</CardTitle>
               <CardDescription>
@@ -50,19 +50,19 @@ export default function Dashboard() {
             <CardContent>
               <DailyTrends />
             </CardContent>
-          </Card>
+          </Card> */}
 
-          <Card>
+          {/* <Card>
             <CardHeader>
-              <CardTitle>Your Performance</CardTitle>
+              <CardTitle>Referal Performance</CardTitle>
               <CardDescription>
-                Track your individual referral performance
+                Track individual referral performance
               </CardDescription>
             </CardHeader>
             <CardContent>
               <IndividualPerformance />
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </DashboardLayout>

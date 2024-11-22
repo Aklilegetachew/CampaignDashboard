@@ -17,8 +17,11 @@ import { Search, Edit, Trash2, Star } from "lucide-react";
 type Participant = {
   id: number;
   name: string;
-  score: number;
-  avatar: string;
+  employeeId: string;
+  referralCode: string;
+  referralCount: number;
+  totalRevenue: number;
+  createdAt: string;
 };
 
 type LeaderboardTableProps = {
@@ -64,6 +67,18 @@ export default function LeaderboardTable({
     }
   };
 
+  const getAvatar = (name: string) => {
+    const initials = name
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase())
+      .join("");
+    return (
+      <div className="flex items-center justify-center w-10 h-10 bg-gray-300 text-gray-700 rounded-full">
+        {initials}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
@@ -81,8 +96,12 @@ export default function LeaderboardTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Rank</TableHead>
-              <TableHead>Participant</TableHead>
-              <TableHead>Score</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Employee ID</TableHead>
+              <TableHead>Referral Code</TableHead>
+              <TableHead>Referral Count</TableHead>
+              <TableHead>Total Revenue (ETB)</TableHead>
+              <TableHead>Created At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -95,15 +114,28 @@ export default function LeaderboardTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-3">
-                    <img
-                      src={participant.avatar}
-                      alt={`${participant.name}'s avatar`}
-                      className="w-10 h-10 rounded-full"
-                    />
+                    {getAvatar(participant.name)}
                     <span>{participant.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>{participant.score}</TableCell>
+                <TableCell>{participant.employeeId}</TableCell>
+                <TableCell>
+                  <a
+                    href={participant.referralCode}
+                    className="text-blue-600 underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {participant.referralCode}
+                  </a>
+                </TableCell>
+                <TableCell>{participant.referralCount}</TableCell>
+                <TableCell>
+                  {participant.totalRevenue.toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(participant.createdAt).toLocaleDateString()}
+                </TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="ghost"
